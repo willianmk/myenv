@@ -14,7 +14,6 @@ set ls=2
 colorscheme jellybeans
 
 " Plugins
-Plugin 'gmarik/Vundle.vim'
 Plugin 'https://github.com/scrooloose/nerdtree'
 Plugin 'https://github.com/kien/ctrlp.vim.git'
 Plugin 'https://github.com/tpope/vim-pathogen'

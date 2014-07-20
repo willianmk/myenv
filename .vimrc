@@ -18,7 +18,6 @@ Plugin 'https://github.com/scrooloose/nerdtree'
 Plugin 'https://github.com/kien/ctrlp.vim.git'
 Plugin 'https://github.com/tpope/vim-pathogen'
 Plugin 'https://github.com/scrooloose/syntastic'
-Plugin 'ShowFunc.vim'
 
 " All of your Plugins must be added before the following line
 call vundle#end()            " required
@@ -40,5 +39,3 @@ autocmd FileType php set omnifunc=phpcomplete#CompletePHP
 
 " Maps
 map <C-n> :NERDTreeToggle<CR>
-map <C-h> <Plug>ShowFunc
-map! <C-h> <Plug>ShowFunc 

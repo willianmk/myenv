@@ -5,7 +5,6 @@ This project is for my current vim configurations.
 
 **Plugins:**
 - Vundle
-- NERDTree
 - CtrlP
 - Pathogen
 - Systastic

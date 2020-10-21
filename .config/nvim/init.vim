@@ -25,7 +25,7 @@ set wildmode=longest,list,full
 syntax on
 vnoremap < <gv
 vnoremap > >gv
-colo tender
+colo jellybeans
 
 " Plugins
 Plugin 'https://github.com/kien/ctrlp.vim.git'

@@ -1,9 +1,6 @@
 set nocompatible              " be iMproved, required
 filetype off                  " required
 
-" set the runtime path to include Vundle and initialize
-set rtp+=~/.config/nvim/bundle/Vundle.vim
-call vundle#begin()
 " alternatively, pass a path where Vundle should install plugins
 " Basic editor configurations
 set number
@@ -22,65 +19,166 @@ set ignorecase
 set tags=~/.tags/php.tags
 set incsearch
 set wildmode=longest,list,full
+let $LANG = 'en_US'
 syntax on
 vnoremap < <gv
 vnoremap > >gv
 colo jellybeans
 
-" Plugins
-Plugin 'https://github.com/kien/ctrlp.vim.git'
-Plugin 'https://github.com/tpope/vim-pathogen'
-Plugin 'https://github.com/scrooloose/syntastic'
-Plugin 'https://github.com/vim-scripts/Greplace.vim'
-Plugin 'jacoborus/tender'
-Plugin 'bling/vim-airline'
-Plugin 'vim-scripts/taglist.vim'
-Plugin 'edkolev/tmuxline.vim'
-Plugin 'sjl/gundo.vim'
-Plugin 'tpope/vim-fugitive'
-Plugin 'msanders/snipmate.vim.git'
-Plugin 'airblade/vim-gitgutter'
-Plugin 'nathanaelkane/vim-indent-guides'
-Plugin 'Chiel92/vim-autoformat'
-Plugin 'https://github.com/Yggdroot/indentLine'
 
-" All of your Plugins must be added before the following line
-call vundle#end()            " required
-filetype plugin indent on    " required
-" To ignore plugin indent changes, instead use:
-"filetype plugin on
+call plug#begin()
+Plug 'https://github.com/VonHeikemen/lsp-zero.nvim'
+Plug 'neovim/nvim-lspconfig'
+Plug 'hrsh7th/cmp-nvim-lsp'
+Plug 'hrsh7th/cmp-buffer'
+Plug 'hrsh7th/cmp-path'
+Plug 'hrsh7th/cmp-cmdline'
+Plug 'hrsh7th/nvim-cmp'
+Plug 'junegunn/vim-easy-align'
 
-" Brief help
-" :PluginList          - list configured plugins
-" :PluginInstall(!)    - install (update) plugins
-" :PluginSearch(!) foo - search (or refresh cache first) for foo
-" :PluginClean(!)      - confirm (or auto-approve) removal of unused plugins
-"
-" see :h vundle for more details or wiki for FAQ
-" Put your non-Plugin stuff after this line
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-telescope/telescope.nvim'
 
-"Auto commands
+Plug 'nvim-tree/nvim-web-devicons'
+Plug 'nvim-lua/plenary.nvim'
+Plug 'nvim-pack/nvim-spectre'
+Plug 'nvim-lualine/lualine.nvim'
+Plug 'nvim-treesitter/nvim-treesitter', {'do': ':TSUpdate'}
+Plug 'ray-x/guihua.lua', {'do': 'cd lua/fzy && make' }
+Plug 'ray-x/navigator.lua'
+call plug#end()
 
-execute pathogen#infect()
-autocmd FileType php set omnifunc=phpcomplete#CompletePHP
-autocmd FileType javascript set omnifunc=javascriptcomplete#CompleteJS
-autocmd FileType html set omnifunc=htmlcomplete#CompleteTags
-autocmd FileType css set omnifunc=csscomplete#CompleteCSS
-autocmd FileType xml set omnifunc=xmlcomplete#CompleteTags
-autocmd BufWritePre * :%s/\s\+$//e
-autocmd QuickFixCmdPost *grep* cwindow
-let g:syntastic_enable_perl_checker = 1
-let g:syntastic_php_checkers = ['php', 'phpcs', 'phpmd']
-let g:syntastic_php_phpcs_args = "--standard=zend -n --report=csv"
-let g:indent_guides_auto_colors = 1
-let g:netrw_liststyle = 3 "Tree format
-let g:netrw_banner = 0 "No banners
-let g:netrw_browse_split = 3 "Opened files on new tab
-let g:netrw_winsize = 25
+" Key maps
 
-"Indentline config
-let g:indentLine_color_term = 239
-let g:indentLine_char = '|'
+lua << EOF
+    -- General LSP config
 
-" KeyMap
-map <C-L> :TlistToggle<CR>
+    -- LSP Zero
+    local lspconfig_defaults = require('lspconfig').util.default_config
+    lspconfig_defaults.capabilities = vim.tbl_deep_extend(
+      'force',
+      lspconfig_defaults.capabilities,
+      require('cmp_nvim_lsp').default_capabilities()
+    )
+
+    -- This is where you enable features that only work
+    -- if there is a language server active in the file
+--     vim.api.nvim_create_autocmd('LspAttach', {
+--       desc = 'LSP actions',
+--       callback = function(event)
+--         local opts = {buffer = event.buf}
+-- 
+--         vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
+--         vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
+--         vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
+--         vim.keymap.set('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<cr>', opts)
+--         vim.keymap.set('n', 'go', '<cmd>lua vim.lsp.buf.type_definition()<cr>', opts)
+--         vim.keymap.set('n', 'gr', '<cmd>lua vim.lsp.buf.references()<cr>', opts)
+--         vim.keymap.set('n', 'gs', '<cmd>lua vim.lsp.buf.signature_help()<cr>', opts)
+--         vim.keymap.set('n', '<F2>', '<cmd>lua vim.lsp.buf.rename()<cr>', opts)
+--         vim.keymap.set({'n', 'x'}, '<F3>', '<cmd>lua vim.lsp.buf.format({async = true})<cr>', opts)
+--         vim.keymap.set('n', '<F4>', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
+--       end,
+--     })
+
+    -- You'll find a list of language servers here:
+    -- https://github.com/neovim/nvim-lspconfig/blob/master/doc/configs.md
+    -- These are example language servers. 
+    require('lspconfig').gleam.setup({})
+    require('lspconfig').ocamllsp.setup({})
+
+    local cmp = require('cmp')
+
+    cmp.setup({
+      sources = {
+        {name = 'nvim_lsp'},
+      },
+      snippet = {
+        expand = function(args)
+          -- You need Neovim v0.10 to use vim.snippet
+          vim.snippet.expand(args.body)
+        end,
+      },
+      mapping = cmp.mapping.preset.insert({}),
+    })
+
+
+    -- Go LSP
+    require'lspconfig'.gopls.setup{}
+
+    -- Yaml LSP
+
+    require('lspconfig').yamlls.setup {
+      settings = {
+        yaml = {
+          schemas = {
+            ["https://gitlab.com/gitlab-org/gitlab/-/raw/master/app/assets/javascripts/editor/schema/ci.json"] = ".gitlab-ci.yaml",
+          },
+        },
+      }
+    }
+
+    -- Dockerfile LSP
+    require("lspconfig").dockerls.setup {
+        settings = {
+            docker = {
+                languageserver = {
+                    formatter = {
+                        ignoreMultilineInstructions = true,
+                    },
+                },
+            }
+        }
+    }
+
+    -- Bash LSP
+    require('lspconfig').bashls.setup{}
+
+    -- Python LSP
+    require'lspconfig'.anakin_language_server.setup{}
+
+    -- Vim Spectre - Search / Replace
+    require('spectre').setup({})
+
+    vim.keymap.set('n', '<leader>S', '<cmd>lua require("spectre").toggle()<CR>', {
+        desc = "Toggle Spectre"
+    })
+    vim.keymap.set('n', '<leader>sw', '<cmd>lua require("spectre").open_visual({select_word=true})<CR>', {
+        desc = "Search current word"
+    })
+    vim.keymap.set('v', '<leader>sw', '<esc><cmd>lua require("spectre").open_visual()<CR>', {
+        desc = "Search current word"
+    })
+    vim.keymap.set('n', '<leader>sp', '<cmd>lua require("spectre").open_file_search({select_word=true})<CR>', {
+        desc = "Search on current file"
+    })
+
+    -- web-devincons
+    require('nvim-web-devicons').setup({})
+
+    -- lualine
+    local jellybeans = require('lualine.themes.jellybeans')
+    require('lualine').setup({
+        options = { theme  = jellybeans },
+    })
+
+    -- treesitter
+    require('nvim-treesitter.configs').setup({
+        highlight = {
+            enable = true,
+        },
+        auto_install = true,
+    })
+
+    -- telescope
+
+    local builtin = require('telescope.builtin')
+    vim.keymap.set('n', '<leader>ff', builtin.find_files, {})
+    vim.keymap.set('n', '<leader>fg', builtin.live_grep, {})
+    vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
+    vim.keymap.set('n', '<leader>fh', builtin.help_tags, {})
+
+    -- navigator
+    require('navigator').setup({})
+
+EOF

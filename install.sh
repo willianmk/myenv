@@ -1,6 +1,5 @@
 #! /bin/sh
 # Set zsh and oh-my-zsh
-chsh -s /usr/bin/zsh root
 wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh -O - | zsh
 cp .zsh ~/
 
